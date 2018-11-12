@@ -1,7 +1,8 @@
 view: session_facts {
   derived_table: {
-    sortkeys: ["session_start_time"]
-    distribution: "session_unique_id"
+#     indexes: ["session_unique_id"]
+#     sortkeys: ["session_start_time"]
+#     distribution: "session_unique_id"
     # update trigger value to desired frequency and timezone
     sql_trigger_value: select date(convert_timezone('pst', getdate() - interval '3 hours')) ;;
     sql: SELECT

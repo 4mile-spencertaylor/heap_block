@@ -2,8 +2,10 @@ view: event_facts {
   derived_table: {
     # update trigger value to desired frequency and timezone
     sql_trigger_value: select date(convert_timezone('pst', getdate() - interval '3 hours')) ;;
-    sortkeys: ["event_sequence_number"]
-    distribution: "unique_event_id"
+#     sortkeys: ["event_sequence_number"]
+#     distribution: "unique_event_id"
+#     indexes: ["unique_event_id"]
+
     sql: WITH
         event_count AS (
             SELECT

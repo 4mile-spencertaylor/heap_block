@@ -1,4 +1,4 @@
-# connection: "heap_sql_folio_hd"
+ connection: "stitch_bq"
 
 # include all the views
 include: "*.view"
