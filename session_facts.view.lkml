@@ -4,14 +4,14 @@ view: session_facts {
 #     sortkeys: ["session_start_time"]
 #     distribution: "session_unique_id"
     # update trigger value to desired frequency and timezone
-    sql_trigger_value: select date(convert_timezone('pst', getdate() - interval '3 hours')) ;;
+    sql_trigger_value: select current_date() ;;
     sql: SELECT
-        all_events.session_id || '-' || all_events.user_id AS session_unique_id,
+        concat(cast(all_events.session_id as string), '-', cast(all_events.user_id as string)) AS session_unique_id,
         user_id,
         row_number() over( partition by user_id order by min(all_events.time)) as session_sequence_number,
         min(all_events.time) AS session_start_time,
         max(all_events.time) AS session_end_time,
-        COUNT(*) AS "all_events.count"
+        COUNT(*) AS all_events_count
       FROM main_production.all_events AS all_events
 
       GROUP BY 1,2
@@ -55,13 +55,13 @@ view: session_facts {
 
   dimension: session_duration_minutes {
     type: number
-    sql: extract(epoch from (${TABLE}.session_end_time - ${TABLE}.session_start_time))/60 ;;
+    sql: (unix_seconds(${TABLE}.session_end_time) - unix_seconds(${TABLE}.session_start_time))/60 ;;
     value_format_name: decimal_2
   }
 
   dimension: event_count {
     type: number
-    sql: ${TABLE}."all_events.count" ;;
+    sql: ${TABLE}.all_events_count ;;
   }
 
   dimension: is_bounced {

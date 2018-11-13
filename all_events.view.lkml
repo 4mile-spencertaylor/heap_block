@@ -7,11 +7,11 @@ view: all_events {
   }
 
   dimension: event_name {
-    sql: ${TABLE}.event_table_name ;;
+    sql: ${TABLE}.event_view_name ;;
   }
 
   dimension: unique_event_id {
-    sql: ${event_id} || '-' || ${event_name} ;;
+    sql: concat(cast(${event_id} as string), '-', cast(${event_name} as string)) ;;
     primary_key: yes
   }
 
@@ -24,7 +24,7 @@ view: all_events {
   dimension: session_unique_id {
     #     hidden: true
     type: string
-    sql: ${session_id} || '-' || ${user_id} ;;
+    sql: concat(cast(${session_id} as string), '-', cast(${user_id} as string)) ;;
   }
 
   dimension: user_id {

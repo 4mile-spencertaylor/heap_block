@@ -10,7 +10,7 @@ view: sessions {
     hidden: yes
     type: string
     primary_key: yes
-    sql: ${session_id} || '-' || ${user_id} ;;
+    sql: concat(cast(${session_id} as string), '-', cast(${user_id} as string)) ;;
   }
 
   dimension: app_name {
@@ -54,8 +54,8 @@ view: sessions {
     sql: ${TABLE}.library ;;
   }
 
-  dimension: phone_model {
-    sql: ${TABLE}.phone_model ;;
+  dimension: device {
+    sql: ${TABLE}.device ;;
   }
 
   dimension: platform {
@@ -67,7 +67,7 @@ view: sessions {
   }
 
   dimension: referrer_domain {
-    sql: split_part(${referrer},'/',3) ;;
+    sql: split(${referrer},'/')[OFFSET(2)] ;;
   }
 
   dimension: referrer_domain_mapped {
@@ -116,7 +116,7 @@ view: sessions {
 
   dimension: source_medium {
     type: string
-    sql: ${utm_source} || '/' || ${utm_medium} ;;
+    sql: concat(cast(${utm_source} as string), '/', cast(${utm_medium} as string)) ;;
   }
 
   dimension: utm_term {
@@ -136,7 +136,7 @@ view: sessions {
 
   measure: average_sessions_per_user {
     type: number
-    sql: ${count}::float/nullif(${count_users},0) ;;
+    sql: cast(${count} as float64)/nullif(${count_users},0) ;;
     value_format_name: decimal_1
   }
 

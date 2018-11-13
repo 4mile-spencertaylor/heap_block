@@ -4,7 +4,7 @@ view: event_flow {
 #     sortkeys: ["sequence_number_for_event_flow"]
 #     distribution: "unique_event_id"
 #     indexes: ["unique_event_id"]
-    sql: select      a.unique_event_id
+    sql:  select a.unique_event_id
             , a.event_id
             , a.session_id
             , a.sequence_number_for_event_flow
@@ -15,23 +15,23 @@ view: event_flow {
             , d.event_name as event_4
             , e.event_name as event_5
 
-from ${event_facts.SQL_TABLE_NAME} a
-left join ${event_facts.SQL_TABLE_NAME} b
-on a.sequence_number_for_event_flow + 1 = b.sequence_number_for_event_flow
-and a.user_id = b.user_id
-and a.session_id = b.session_id
-left join ${event_facts.SQL_TABLE_NAME} c
-on a.sequence_number_for_event_flow + 2 = c.sequence_number_for_event_flow
-and a.user_id = c.user_id
-and a.session_id = c.session_id
-left join ${event_facts.SQL_TABLE_NAME} d
-on a.sequence_number_for_event_flow + 3 = d.sequence_number_for_event_flow
-and a.user_id = d.user_id
-and a.session_id = d.session_id
-left join ${event_facts.SQL_TABLE_NAME} e
-on a.sequence_number_for_event_flow + 4 = e.sequence_number_for_event_flow
-and a.user_id = e.user_id
-and a.session_id = e.session_id
+          from ${event_facts.SQL_TABLE_NAME} a
+          left join ${event_facts.SQL_TABLE_NAME} b
+          on a.sequence_number_for_event_flow + 1 = b.sequence_number_for_event_flow
+          and a.user_id = b.user_id
+          and a.session_id = b.session_id
+          left join ${event_facts.SQL_TABLE_NAME} c
+          on a.sequence_number_for_event_flow + 2 = c.sequence_number_for_event_flow
+          and a.user_id = c.user_id
+          and a.session_id = c.session_id
+          left join ${event_facts.SQL_TABLE_NAME} d
+          on a.sequence_number_for_event_flow + 3 = d.sequence_number_for_event_flow
+          and a.user_id = d.user_id
+          and a.session_id = d.session_id
+          left join ${event_facts.SQL_TABLE_NAME} e
+          on a.sequence_number_for_event_flow + 4 = e.sequence_number_for_event_flow
+          and a.user_id = e.user_id
+          and a.session_id = e.session_id
  ;;
   }
 

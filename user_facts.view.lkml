@@ -4,7 +4,7 @@ view: user_facts {
 #     sortkeys: ["first_session"]
 #     distribution: "user_id"
     # update trigger value to desired frequency and timezone
-    sql_trigger_value: select date(convert_timezone('pst', getdate() - interval '3 hours')) ;;
+    sql_trigger_value: current_date() ;;
     sql: SELECT
         sessions.user_id AS user_id,
         min(sessions.time) AS first_session,

@@ -1,7 +1,7 @@
 view: event_facts {
   derived_table: {
     # update trigger value to desired frequency and timezone
-    sql_trigger_value: select date(convert_timezone('pst', getdate() - interval '3 hours')) ;;
+    sql_trigger_value: select current_date() ;;
 #     sortkeys: ["event_sequence_number"]
 #     distribution: "unique_event_id"
 #     indexes: ["unique_event_id"]
@@ -9,10 +9,10 @@ view: event_facts {
     sql: WITH
         event_count AS (
             SELECT
-              event_table_name
+              event_view_name
               , COUNT(*) AS cardinality
             FROM main_production.all_events
-            WHERE TIME > DATEADD('day', - 30, GETDATE())
+            WHERE TIME > cast(DATE_ADD(current_date(), interval -30 day) as timestamp)
             GROUP BY 1
         )
         , all_events AS (
@@ -20,12 +20,12 @@ view: event_facts {
               DISTINCT all_events.event_id
               , all_events.user_id AS user_id
               , all_events.session_id
-              , all_events.event_table_name AS event_name
+              , all_events.event_view_name AS event_name
               , all_events.TIME AS occurred_at
               , event_count.cardinality
             FROM main_production.all_events AS all_events
             LEFT JOIN event_count
-              ON all_events.event_table_name = event_count.event_table_name
+              ON all_events.event_view_name = event_count.event_view_name
         )
         , events AS (
             SELECT
@@ -46,16 +46,17 @@ view: event_facts {
                 AND all_events.user_id = event.user_id
         )
       SELECT a.event_id
-            , a.event_table_name AS event_name
-            , a.event_id || '-' || a.event_table_name AS unique_event_id
+            , a.event_view_name AS event_name
+            , concat(cast(a.event_id as string), '-', cast(a.event_view_name as string)) AS unique_event_id
             , a.user_id
             , a.session_id
             , events.sequence_number_for_event_flow AS sequence_number_for_event_flow
-            , ROW_NUMBER() OVER(PARTITION BY a.session_id, a.user_id ORDER BY a."time") AS event_sequence_number
+            , ROW_NUMBER() OVER(PARTITION BY a.session_id, a.user_id ORDER BY a.time) AS event_sequence_number
       FROM main_production.all_events AS a
       LEFT JOIN events
         ON events.event_id = a.event_id
-        AND events.event_name = a.event_table_name
+        AND events.event_name = a.event_view_name
+
        ;;
   }
 

@@ -8,7 +8,7 @@ view: users {
   }
 
   dimension: identity {
-    sql: ${TABLE}."identity" ;;
+    sql: ${TABLE}.identity ;;
   }
 
   dimension_group: joindate {
